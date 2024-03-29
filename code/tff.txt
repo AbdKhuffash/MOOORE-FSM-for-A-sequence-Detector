@@ -1,0 +1,77 @@
+////////////////////////////////////////// 
+
+// Khuffash	 
+
+// 31-8-23
+
+//	
+
+//	T-FlipFlop Code  
+
+// 	Test Bench For the T-FlipFlop Code 
+
+/////////////////////////////////////////
+
+
+module TFF(T, CLK, R, Q);
+    // Define a module named "TFF" with the following ports:
+    // - T: Input signal for toggling the flip-flop state.
+    // - CLK: Clock input signal.
+    // - R: Reset input signal.
+    // - Q: Output signal representing the state of the flip-flop and assing value 0 to it.
+	input T,CLK,R;
+	output reg Q=0;
+
+    always @(posedge CLK, negedge R)
+        // Always block triggered by the rising edge of clock(CLK) or the falling edge of reset(R).
+
+        if (~R)
+            // If the reset signal R is low (active low reset), ~R=1.
+            Q <= 0; // Set the output Q to logic 0 (reset state).
+
+        else 
+            // If the reset signal R is high (not in reset condition).
+            Q <= T ^ Q;
+            // Perform an XOR (^) operation between the input T and the current value of Q.
+            // The result is assigned to the output Q. This effectively toggles the Q and gets its negate value, if T is 1.
+endmodule
+
+
+module TFF_tb;
+    // Inputs
+    reg T;
+    reg CLK;
+    reg R;
+
+    // Outputs
+    wire Q;
+
+    // Instantiate the TFF module
+    TFF uut (.T(T),.CLK(CLK),.R(R),.Q(Q));
+
+    // Clock generation
+    always #5 CLK = ~CLK;
+
+    // Initial values
+    initial begin
+        CLK = 0;
+        T = 0;
+        R = 1;
+
+
+        // Test sequence
+        #30 T = 0;
+        #40 T = 1;
+        #50 T = 0;
+        #60 T = 1;
+
+        #100 $finish;
+    end
+
+    // Display output
+    always @(posedge CLK) begin
+        $display("Time = %0t | T = %b | R = %b | Q = %b", $time, T, R, Q);
+    end
+
+endmodule
+
